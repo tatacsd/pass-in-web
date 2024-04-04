@@ -11,7 +11,21 @@ import { Table } from "./table/table";
 import { TableHeader } from "./table/table-header";
 import { TableCell } from "./table/table-cell";
 import { TableRow } from "./table/table-row";
+import { ChangeEvent, useState } from "react";
+import { attendees } from "../data/attendees";
+import { enCA } from "date-fns/locale";
+import { formatRelative } from "date-fns";
+
+
+
 export function AttendeeList() {
+const [searchQuery, setSearchQuery] = useState("");
+
+  function handleSearchInputChange(event: ChangeEvent<HTMLInputElement>) {
+    setSearchQuery(event.target.value);
+  }
+
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-3 items-center">
@@ -19,8 +33,9 @@ export function AttendeeList() {
         <div className="w-72 px-3 py-1.5 border border-white/10 rounded-lg text-sm flex items-center gap-3">
           <Search className="size-4 text-emerald-300" />
           <input
-            className="bg-transparent flex-1 outline-none"
+            className="bg-transparent flex-1 outline-none border-0 p-0 text-sm"
             placeholder="Search for attendee"
+            onChange={handleSearchInputChange}
           />
         </div>
       </div>
@@ -43,25 +58,24 @@ export function AttendeeList() {
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 10 }).map((_, index) => {
+          {attendees.map((attendee) => {
             return (
-              <TableRow
-                key={index}              >
+              <TableRow key={attendee.id}>
                 <TableCell>
                   <input
                     type="checkbox"
                     className="bg-black/20 rounded size-4 border border-white/10 "
                   />
                 </TableCell>
-                <TableCell>001</TableCell>
+                <TableCell>{attendee.id}</TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <span className="font-semibold text-white">John Doe</span>
-                    <span>john.doe@mail.com</span>
+                    <span className="font-semibold text-white">{attendee.name}</span>
+                    <span>{attendee.email}</span>
                   </div>
                 </TableCell>
-                <TableCell>7 days ago</TableCell>
-                <TableCell>7 days ago</TableCell>
+                <TableCell>{formatRelative(attendee.createdAt, new Date(), { locale: enCA })}</TableCell>
+                <TableCell>{formatRelative(attendee.checkedInAt, new Date(), { locale: enCA })}</TableCell>
                 <TableCell>
                   <IconButton transparent>
                     <MoreHorizontal className="size-4" />
