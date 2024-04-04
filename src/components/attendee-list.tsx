@@ -13,9 +13,12 @@ import { TableCell } from "./table/table-cell";
 import { TableRow } from "./table/table-row";
 import { ChangeEvent, useState } from "react";
 import { attendees } from "../data/attendees";
-import { enCA } from "date-fns/locale";
-import { formatRelative } from "date-fns";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/en-ca";
 
+dayjs.extend(relativeTime);
+dayjs.locale("en-ca");
 
 
 export function AttendeeList() {
@@ -74,8 +77,8 @@ const [searchQuery, setSearchQuery] = useState("");
                     <span>{attendee.email}</span>
                   </div>
                 </TableCell>
-                <TableCell>{formatRelative(attendee.createdAt, new Date(), { locale: enCA })}</TableCell>
-                <TableCell>{formatRelative(attendee.checkedInAt, new Date(), { locale: enCA })}</TableCell>
+                <TableCell>{dayjs().to(attendee.createdAt)}</TableCell>
+                <TableCell>{dayjs().to(attendee.checkedInAt)}</TableCell>
                 <TableCell>
                   <IconButton transparent>
                     <MoreHorizontal className="size-4" />
