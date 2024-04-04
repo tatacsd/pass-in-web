@@ -1,3 +1,5 @@
+import { ComponentProps } from "react";
+
 interface IconButtonProps extends ComponentProps<"button"> {
   transparent?: boolean;
 }
@@ -8,8 +10,8 @@ export function IconButton({ transparent, ...props }: IconButtonProps) {
       {...props}
       className={
         transparent
-          ? "bg-white/10 border border-white/10 rounded-md p-1.5"
-          : "bg-black/20 border border-white/10 rounded-md p-1.5"
+          ? "bg-white/20 border border-white/10 rounded-md p-1.5"
+          : "bg-black/10 border border-white/10 rounded-md p-1.5"
       }
     />
   );
