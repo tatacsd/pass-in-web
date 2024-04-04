@@ -23,10 +23,50 @@ dayjs.locale("en-ca");
 
 export function AttendeeList() {
 const [searchQuery, setSearchQuery] = useState("");
+const [currentPage, setCurrentPage] = useState(1);
 
-  function handleSearchInputChange(event: ChangeEvent<HTMLInputElement>) {
+  const handleSearchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   }
+
+  const getTotalAttendees = () => {
+    return attendees.length;
+  }
+
+  const getNumberOfPages = () => {
+    return Math.ceil(attendees.length / 10);
+  }
+
+
+  const getSliceRangeForCurrentPage = () => {
+    return {
+      start: (currentPage - 1) * 10,
+      end: currentPage * 10,
+    };
+  }
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
+  const goToNextPage = () => {
+    if (currentPage < getNumberOfPages()) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
+  const goToFirstPage = () => {
+    setCurrentPage(1);
+  }
+
+  const goToLastPage = () => {
+    setCurrentPage(getNumberOfPages());
+  }
+
+
+  
 
 
   return (
@@ -61,7 +101,9 @@ const [searchQuery, setSearchQuery] = useState("");
           </tr>
         </thead>
         <tbody>
-          {attendees.map((attendee) => {
+          {attendees
+          .slice(getSliceRangeForCurrentPage().start, getSliceRangeForCurrentPage().end)
+          .map((attendee) => {
             return (
               <TableRow key={attendee.id}>
                 <TableCell>
@@ -91,26 +133,26 @@ const [searchQuery, setSearchQuery] = useState("");
         <tfoot>
           <tr>
             <TableCell colSpan={3}>
-              Showing 10 of 100 attendees
+              Showing 10 of {getTotalAttendees()} attendees
             </TableCell>
             <TableCell
               className="text-right"
               colSpan={3}
             >
               <div className="inline-flex gap-8 items-center">
-                <span>Page 1 of 10</span>
+                <span>Page {currentPage} of {getNumberOfPages()}</span>
 
                 <div className="flex gap-1.5">
-                  <IconButton>
+                  <IconButton onClick={goToFirstPage} disabled={currentPage === 1}>
                     <ChevronsLeft className="size-4" />
                   </IconButton>
-                  <IconButton>
+                  <IconButton onClick={goToPreviousPage}>
                     <ChevronLeft className="size-4" />
                   </IconButton>
-                  <IconButton>
+                  <IconButton onClick={goToNextPage}>
                     <ChevronRight className="size-4" />
                   </IconButton>
-                  <IconButton>
+                  <IconButton onClick={goToLastPage} disabled={currentPage === getNumberOfPages()}>
                     <ChevronsRight className="size-4" />
                   </IconButton>
                 </div>
