@@ -50,29 +50,30 @@ export function AttendeeList() {
     return 1;
   });
   const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [eventId] = useState(
-    "d97443ca-71ff-4e22-93b0-2c0fe0981b51"
-  );
+  const [eventId] = useState("d97443ca-71ff-4e22-93b0-2c0fe0981b51");
   const [totalAttendees, setTotalAttendees] = useState(0);
   const total = Math.ceil(totalAttendees / 10);
 
   useEffect(() => {
-    const url = new URL(`http://localhost:3333/events/${eventId}/attendees`);
+    const url = new URL(
+      `https://pass-in-backend-node.onrender.com/events/${eventId}/attendees`
+    );
 
     url.searchParams.set("page_index", (page - 1).toString());
 
     if (searchQuery.length > 0) {
       url.searchParams.set("query", searchQuery);
     }
+
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         setAttendees(data.attendees);
         setTotalAttendees(data.total);
       });
+
+    console.log(url.href);
   }, [page, searchQuery]);
-
-
 
   function setCurrentPage(page: number) {
     const url = new URL(window.location.toString());
