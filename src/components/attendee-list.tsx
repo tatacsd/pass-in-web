@@ -16,7 +16,6 @@ import { ChangeEvent, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/en-ca";
-import { se } from "date-fns/locale";
 
 dayjs.extend(relativeTime);
 dayjs.locale("en-ca");
@@ -51,7 +50,7 @@ export function AttendeeList() {
     return 1;
   });
   const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [eventId, setEventId] = useState(
+  const [eventId] = useState(
     "d97443ca-71ff-4e22-93b0-2c0fe0981b51"
   );
   const [totalAttendees, setTotalAttendees] = useState(0);
