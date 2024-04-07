@@ -30,60 +30,63 @@ interface Attendee {
 
 export function AttendeeList() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [eventId, setEventId] = useState(
-    "a1b2c3d4-e5f6-g7h8-i6j0-k1l2t9n4o3p6"
+    "d97443ca-71ff-4e22-93b0-2c0fe0981b51"
   );
+  const [totalAttendees, setTotalAttendees] = useState(0);  
+  const total = Math.ceil(totalAttendees / 10);
+
 
   useEffect(() => {
     fetch(
-      `http://localhost:3333/events/f36cbf54-1432-4120-8952-8f8c601bed2a/attendees`
+      `http://localhost:3333/events/${eventId}/attendees?page_index=${page}`
     )
       .then((response) => response.json())
       .then((data) => {
         setAttendees(data.attendees);
+        setTotalAttendees(data.total);
+        console.log(data);
       });
-  }, [currentPage]);
+  }, [page]);
 
   const handleSearchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
   const getTotalAttendees = () => {
-    return attendees.length;
+    return totalAttendees;
   };
 
-  const getNumberOfPages = () => {
-    return Math.ceil(attendees.length / 10);
-  };
 
-  const getSliceRangeForCurrentPage = () => {
+  const getSliceRangeForpage = () => {
     return {
-      start: (currentPage - 1) * 10,
-      end: currentPage * 10,
+      start: (page - 1) * 10,
+      end: page * 10,
     };
   };
 
   const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+    if (page > 1) {
+      setPage(page - 1);
     }
   };
 
   const goToNextPage = () => {
-    if (currentPage < getNumberOfPages()) {
-      setCurrentPage(currentPage + 1);
+    if (page < total) {
+      setPage(page + 1);
     }
   };
 
   const goToFirstPage = () => {
-    setCurrentPage(1);
+    setPage(1);
   };
 
   const goToLastPage = () => {
-    setCurrentPage(getNumberOfPages());
+    setPage(total);
   };
+  console.log("page", page);
 
   return (
     <div className="flex flex-col gap-4">
@@ -118,10 +121,6 @@ export function AttendeeList() {
         </thead>
         <tbody>
           {attendees
-            .slice(
-              getSliceRangeForCurrentPage().start,
-              getSliceRangeForCurrentPage().end
-            )
             .map((attendee) => {
               return (
                 <TableRow key={attendee.id}>
@@ -158,36 +157,36 @@ export function AttendeeList() {
         <tfoot>
           <tr>
             <TableCell colSpan={3}>
-              Showing 10 of {getTotalAttendees()} attendees
+              Showing {attendees.length} of {getTotalAttendees()} attendees
             </TableCell>
             <TableCell className="text-right" colSpan={3}>
               <div className="inline-flex gap-8 items-center">
                 <span>
-                  Page {currentPage} of {getNumberOfPages()}
+                  Page {page} of {total}
                 </span>
 
                 <div className="flex gap-1.5">
                   <IconButton
                     onClick={goToFirstPage}
-                    disabled={currentPage === 1}
+                    disabled={page === 1}
                   >
                     <ChevronsLeft className="size-4" />
                   </IconButton>
                   <IconButton
                     onClick={goToPreviousPage}
-                    disabled={currentPage === 1}
+                    disabled={page === 1}
                   >
                     <ChevronLeft className="size-4" />
                   </IconButton>
                   <IconButton
                     onClick={goToNextPage}
-                    disabled={currentPage === getNumberOfPages()}
+                    disabled={page === total}
                   >
                     <ChevronRight className="size-4" />
                   </IconButton>
                   <IconButton
                     onClick={goToLastPage}
-                    disabled={currentPage === getNumberOfPages()}
+                    disabled={page === total}
                   >
                     <ChevronsRight className="size-4" />
                   </IconButton>
