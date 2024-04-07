@@ -31,7 +31,16 @@ interface Attendee {
 
 export function AttendeeList() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(() => {
+    const url = new URL(window.location.toString());
+    const page = url.searchParams.get("page");
+
+    if (page) {
+      return parseInt(page);
+    }
+
+    return 1;
+  });
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [eventId, setEventId] = useState(
     "d97443ca-71ff-4e22-93b0-2c0fe0981b51"
@@ -55,9 +64,21 @@ export function AttendeeList() {
       });
   }, [page, searchQuery]);
 
+
+
+  function setCurrentPage(page: number) {
+    const url = new URL(window.location.toString());
+
+    url.searchParams.set("page", String(page));
+
+    window.history.pushState({}, "", url);
+
+    setPage(page);
+  }
+
   const handleSearchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-    setPage(1);
+    setCurrentPage(1);
   };
 
   const getTotalAttendees = () => {
@@ -66,22 +87,22 @@ export function AttendeeList() {
 
   const goToPreviousPage = () => {
     if (page > 1) {
-      setPage(page - 1);
+      setCurrentPage(page - 1);
     }
   };
 
   const goToNextPage = () => {
     if (page < total) {
-      setPage(page + 1);
+      setCurrentPage(page + 1);
     }
   };
 
   const goToFirstPage = () => {
-    setPage(1);
+    setCurrentPage(1);
   };
 
   const goToLastPage = () => {
-    setPage(total);
+    setCurrentPage(total);
   };
 
   return (
